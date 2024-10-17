@@ -1,4 +1,3 @@
-import FileUpload from "./components/FileUpload";
 import Navbar from "./components/Navbar";
 
 export default function Home() {
@@ -10,7 +9,6 @@ export default function Home() {
         <div className="pt-6 font-medium text-neutral-600">
           Try our video reducer online for free
         </div>
-        <FileUpload />
       </div>
     </div>
   );
