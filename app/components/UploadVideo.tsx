@@ -11,6 +11,7 @@ const UploadVideo = () => {
   const [error, setError] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [process, setProcess] = useState(false);
 
   useEffect(() => {
     const Unsubscribe = onStatechangedAuth((user) => {
@@ -59,11 +60,21 @@ const UploadVideo = () => {
     setLoading(true);
     try {
       const response = await uploadVideo(file, user);
-      alert(`File Uploaded successfully ${JSON.stringify(response)}`);
-    } catch (error) {
-      console.log(error);
-    } finally {
       setLoading(false);
+      console.log(response.fileName);
+      //add state to process
+      setProcess(true);
+      //call to api
+      const download_url = await fetch("/api/downloadvideo", {
+        method: "GET",
+        body: JSON.stringify({fileName: response.fileName}),
+      });
+      setProcess(false);
+      return download_url;
+    } catch (error) {
+      setLoading(false);
+      setProcess(false);
+      console.log(error);
     }
   };
 
@@ -107,7 +118,7 @@ const UploadVideo = () => {
                     onClick={handleUpload}
                     className="mt-2 px-4 py-2 text-lg font-normal bg-black text-white rounded hover:bg-neutral-900 transition duration-200"
                   >
-                    {loading ? "Confirm Upload" : "Convert"}
+                    {loading ? "Uploading" : process ? "Processing" : "Convert"}
                   </button>
                 </div>
               </div>

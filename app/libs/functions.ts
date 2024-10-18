@@ -13,7 +13,6 @@ export async function uploadVideo(file: File, user: User) {
     contentType: file.type,
   });
 
-  console.log(response);
   await fetch(response?.data?.url, {
     method: "PUT",
     body: file,
@@ -21,5 +20,5 @@ export async function uploadVideo(file: File, user: User) {
       "Content-Type": file.type,
     },
   });
-  return;
+  return response?.data;
 }
