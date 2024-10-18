@@ -1,4 +1,5 @@
 import Navbar from "./components/Navbar";
+import UploadVideo from "./components/UploadVideo";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
           Try our video reducer online for free
         </div>
       </div>
+      <UploadVideo />
     </div>
   );
 }
