@@ -12,6 +12,7 @@ const UploadVideo = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [process, setProcess] = useState(false);
+  const [download_url, setDownloadURL] = useState("");
 
   useEffect(() => {
     const Unsubscribe = onStatechangedAuth((user) => {
@@ -65,12 +66,21 @@ const UploadVideo = () => {
       //add state to process
       setProcess(true);
       //call to api
-      const download_url = await fetch("/api/downloadvideo", {
-        method: "GET",
-        body: JSON.stringify({fileName: response.fileName}),
-      });
+
+      setTimeout(async () => {
+        const download_url = await fetch("/api/downloadvideo", {
+          method: "GET",
+          body: JSON.stringify({fileName: response.fileName}),
+        }).then((res) => res.json());
+
+        if (download_url.Downloadstring.length !== 0) {
+          setDownloadURL(download_url.Downloadstring);
+          return;
+        }
+      }, 1000);
+      console.log(download_url);
+
       setProcess(false);
-      return download_url;
     } catch (error) {
       setLoading(false);
       setProcess(false);
