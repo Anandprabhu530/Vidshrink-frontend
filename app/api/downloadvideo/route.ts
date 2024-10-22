@@ -1,6 +1,11 @@
 import {db} from "@/app/libs/firebase";
 import {NextRequest} from "next/server";
 import {doc, getDoc} from "firebase/firestore";
+import {getFunctions, httpsCallable} from "firebase/functions";
+
+const functions = getFunctions();
+
+const generateDownloadURL = httpsCallable(functions, "generateDownloadURL");
 
 export async function GET(request: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,8 +19,9 @@ export async function GET(request: NextRequest) {
     //process here or create a firebase function to fetch the url
     //firebase function is better for security
     //processing locally need to add more permissions
-
-    return Response.json({Downloadstring: video_details.fileName});
+    const url = await generateDownloadURL(fileName);
+    console.log(url);
+    return Response.json({Downloadstring: url});
   } else {
     return Response.json({Downloadstring: ""});
   }
