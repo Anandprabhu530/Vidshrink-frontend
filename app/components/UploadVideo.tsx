@@ -58,6 +58,9 @@ const UploadVideo = () => {
     if (!user) {
       return;
     }
+    console.log(file);
+    //file.filepath
+
     setLoading(true);
     try {
       const response = await uploadVideo(file, user);
@@ -74,12 +77,16 @@ const UploadVideo = () => {
         }).then((res) => res.json());
 
         if (download_url.Downloadstring.length !== 0) {
+          const link = document.createElement("a");
+          link.href = download_url.Downloadstring.signedUrl;
+          link.download = `processed_video_${file.name}.mp4`;
+          link.click();
           setDownloadURL(download_url.Downloadstring);
           return;
         }
       }, 1000);
-      console.log(download_url);
 
+      console.log(download_url);
       setProcess(false);
     } catch (error) {
       setLoading(false);

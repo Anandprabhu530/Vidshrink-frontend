@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     //process here or create a firebase function to fetch the url
     //firebase function is better for security
     //processing locally need to add more permissions
+
     return Response.json({Downloadstring: video_details.fileName});
   } else {
     return Response.json({Downloadstring: ""});
