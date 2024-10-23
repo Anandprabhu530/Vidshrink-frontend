@@ -39,6 +39,7 @@ const UploadVideo = () => {
     },
     []
   );
+
   const dropzoneOptions: DropzoneOptions = {
     onDrop,
     accept: {
@@ -72,7 +73,7 @@ const UploadVideo = () => {
 
       setTimeout(async () => {
         const download_url = await fetch("/api/downloadvideo", {
-          method: "GET",
+          method: "POST",
           body: JSON.stringify({fileName: response.fileName}),
         }).then((res) => res.json());
 
