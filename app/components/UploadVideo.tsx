@@ -1,16 +1,16 @@
 "use client";
 
 import {useEffect, useState, useCallback} from "react";
-import {db, onStatechangedAuth, Signinwithgoogle} from "../libs/firebase";
+import {onStatechangedAuth, Signinwithgoogle} from "../libs/firebase";
 import {User} from "firebase/auth";
 import {useDropzone, FileRejection, DropzoneOptions} from "react-dropzone";
 import {uploadVideo} from "../libs/functions";
-import {doc, getDoc} from "firebase/firestore";
 import {getFunctions, httpsCallable} from "firebase/functions";
 
 const functions = getFunctions();
 
 const checkVideoStatus = httpsCallable(functions, "checkVideoStatus");
+const generateDownloadURL = httpsCallable(functions, "generateDownloadURL");
 
 const UploadVideo = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -90,12 +90,23 @@ const UploadVideo = () => {
         respone.data.data !== "processing"
       ) {
         console.log(respone.data.data);
+        setDownloadURL(respone.data.data);
         clearInterval(intervalId);
         return;
       }
     }, 2000);
     setProcess(false);
   };
+
+  useEffect(() => {
+    if (download_url.length !== 0) {
+      const res = async () => {
+        const url = await generateDownloadURL({fileName: download_url});
+        console.log(url);
+      };
+      res();
+    }
+  }, [download_url]);
 
   return (
     <div className="w-full flex items-center justify-center mt-16">
