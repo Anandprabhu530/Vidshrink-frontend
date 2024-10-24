@@ -1,10 +1,16 @@
 "use client";
 
 import {useEffect, useState, useCallback} from "react";
-import {onStatechangedAuth, Signinwithgoogle} from "../libs/firebase";
+import {db, onStatechangedAuth, Signinwithgoogle} from "../libs/firebase";
 import {User} from "firebase/auth";
 import {useDropzone, FileRejection, DropzoneOptions} from "react-dropzone";
 import {uploadVideo} from "../libs/functions";
+import {doc, getDoc} from "firebase/firestore";
+import {getFunctions, httpsCallable} from "firebase/functions";
+
+const functions = getFunctions();
+
+const checkVideoStatus = httpsCallable(functions, "checkVideoStatus");
 
 const UploadVideo = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -63,37 +69,32 @@ const UploadVideo = () => {
     //file.filepath
 
     setLoading(true);
-    try {
-      const response = await uploadVideo(file, user);
-      setLoading(false);
-      console.log(response.fileName);
-      //add state to process
-      setProcess(true);
-      //call to api
-
-      setTimeout(async () => {
-        const download_url = await fetch("/api/downloadvideo", {
-          method: "POST",
-          body: JSON.stringify({fileName: response.fileName}),
-        }).then((res) => res.json());
-
-        if (download_url.Downloadstring.length !== 0) {
-          const link = document.createElement("a");
-          link.href = download_url.Downloadstring.signedUrl;
-          link.download = `processed_video_${file.name}.mp4`;
-          link.click();
-          setDownloadURL(download_url.Downloadstring);
-          return;
-        }
-      }, 1000);
-
-      console.log(download_url);
-      setProcess(false);
-    } catch (error) {
-      setLoading(false);
-      setProcess(false);
-      console.log(error);
-    }
+    // try {
+    const response = await uploadVideo(file, user);
+    setLoading(false);
+    console.log("URL Reponse", response);
+    console.log(response.fileName);
+    //add state to process
+    setProcess(true);
+    const intervalId = setInterval(async () => {
+      const respone = await checkVideoStatus({
+        fileName: response.fileName,
+      });
+      console.log(respone.data);
+      if (!respone.data) {
+        console.log("No response");
+      }
+      if (
+        respone.data &&
+        respone.data.data &&
+        respone.data.data !== "processing"
+      ) {
+        console.log(respone.data.data);
+        clearInterval(intervalId);
+        return;
+      }
+    }, 2000);
+    setProcess(false);
   };
 
   return (
