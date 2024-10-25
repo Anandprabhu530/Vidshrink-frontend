@@ -103,6 +103,12 @@ const UploadVideo = () => {
       const res = async () => {
         const url = await generateDownloadURL({fileName: download_url});
         console.log(url);
+        //data.data.signedurl
+        //object exists in above location
+        // const link = document.createElement("a");
+        // link.href = url.signedURL;
+        // link.download = `processed_video_${file.name}.mp4`;
+        // link.click();
       };
       res();
     }
