@@ -65,22 +65,18 @@ const UploadVideo = () => {
     if (!user) {
       return;
     }
-    console.log(file);
     //file.filepath
 
     setLoading(true);
     // try {
     const response = await uploadVideo(file, user);
     setLoading(false);
-    console.log("URL Reponse", response);
-    console.log(response.fileName);
     //add state to process
     setProcess(true);
     const intervalId = setInterval(async () => {
       const respone = await checkVideoStatus({
         fileName: response.fileName,
       });
-      console.log(respone.data);
       if (!respone.data) {
         console.log("No response");
       }
@@ -89,7 +85,6 @@ const UploadVideo = () => {
         respone.data.data &&
         respone.data.data !== "processing"
       ) {
-        console.log(respone.data.data);
         setDownloadURL(respone.data.data);
         clearInterval(intervalId);
         return;
@@ -101,14 +96,13 @@ const UploadVideo = () => {
   useEffect(() => {
     if (download_url.length !== 0) {
       const res = async () => {
+        setProcess(true);
         const url = await generateDownloadURL({fileName: download_url});
-        console.log(url);
-        //data.data.signedurl
-        //object exists in above location
-        // const link = document.createElement("a");
-        // link.href = url.signedURL;
-        // link.download = `processed_video_${file.name}.mp4`;
-        // link.click();
+        setProcess(false);
+        const link = document.createElement("a");
+        link.href = url.data.signedUrl;
+        link.download = `${download_url}.mp4`;
+        link.click();
       };
       res();
     }
