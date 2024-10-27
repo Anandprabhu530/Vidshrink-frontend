@@ -90,19 +90,18 @@ const UploadVideo = () => {
         return;
       }
     }, 2000);
-    setProcess(false);
   };
 
   useEffect(() => {
     if (download_url.length !== 0) {
       const res = async () => {
-        setProcess(true);
         const url = await generateDownloadURL({fileName: download_url});
         setProcess(false);
         const link = document.createElement("a");
         link.href = url.data.signedUrl;
         link.download = `${download_url}.mp4`;
         link.click();
+        setFile(null);
       };
       res();
     }

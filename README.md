@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vids Shrink
 
-## Getting Started
+A Dockerized Video Shrinker Application deployed on Google Cloud Run
 
-First, run the development server:
+This project provides a video shrinking application that can be easily deployed to Google Cloud Run. It leverages Docker to containerize the application, ensuring consistent behavior across different environments.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Reduces video file sizes while maintaining quality.
+- Supports various output formats (e.g., MP4, WebM).
+- Easily deploy to Google Cloud Run for scalable and serverless hosting.
+- Ensures consistent behavior across different environments.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Frontend (Next.js):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- User interacts with the frontend and triggers the video upload process.
+- Frontend sends a request to the Firebase Cloud Functions.
 
-## Learn More
+## Firebase Cloud Functions:
 
-To learn more about Next.js, take a look at the following resources:
+- Receives the request from the frontend.
+- Generates a signed URL using Firebase Storage's getSignedUrl method.
+- Returns the signed URL to the frontend.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Frontend:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Uses the signed URL to directly upload the video to the Firebase Storage bucket.
 
-## Deploy on Vercel
+## Buckets
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Receives the video and stores it in the specified bucket.
+- Triggers a Pub/Sub message upon successful upload.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Pub/Sub:
+
+- Receives the message from Firebase Storage.
+- Publishes the message to a specific topic.
+
+## Cloud Run:
+
+- Receives the message triggered by the video upload.
+- Fetches the video from the bucket.
+- Processes and uploads the video to a different bucket.
+
+## Firebase
+
+- Create's new record for user authentication.
+- Keeps track of video process to maintain idempotency.
+
+Frontend receives the temporary download URL from firebase functions. The temporary download URL is configured to expire after 15 minutes. This url is returned to the user.
+
+## Possible Improvements
+
+- Video Editing: To Implement a basic video editing features like trimming, cropping.
+- Video Transcoding: Support transcoding videos to different formats and resolutions to cater to various devices and platforms.
+
+Cloud run code can be found [here](https://github.com/Anandprabhu530/vidshrink).
